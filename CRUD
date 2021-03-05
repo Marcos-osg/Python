@@ -1,0 +1,106 @@
+import sqlite3
+
+
+
+class Crud():
+    def escolha(self,resposta):
+        if resposta == '0':
+            quit()
+        elif resposta == '1':
+            self.inserir_dados()
+        elif resposta == '2':
+            self.mostrar_dados()
+        elif resposta == '3':
+            self.deleta()
+        elif resposta == '4':
+            self.alterar() 
+        else:
+            print(f'Selecione uma opção valida\r')
+            
+
+
+    def principal(self):
+        print('######################################')
+        print('##    Selecione uma opção abaixo    ##')
+        print('##    0 - Sair                      ##')
+        print('##    1 - Inserir novo registro     ##')
+        print('##    2 - mostrar um registro       ##')
+        print('##    3 - excluir um registro       ##')
+        print('##    4 - alterar um registro       ##')
+        print('######################################')
+        resposta = input('Digite a opção: ')
+        self.escolha(resposta)
+        while resposta != '0':
+            self.principal()
+
+
+
+    def conecta_banco(self):
+        self.conn = sqlite3.connect("clientes_novo1.db")
+        self.cursor = self.conn.cursor()
+        
+
+
+    def desconecta(self):
+            self.conn.close()
+
+
+    def cria_banco(self):
+        self.conecta_banco()
+        self.cursor.execute(""" 
+            CREATE TABLE IF NOT EXISTs Clientes(
+            cod INTEGER PRIMARY KEY AUTOINCREMENT,
+            nome TEXT NOT NULL, cpf INTEGER UNIQUE NOT NULL,
+            email TEXT NOT NULL
+            );
+            """)
+        self.conn.commit()
+        self.desconecta()
+        self.principal()
+
+
+    def inserir_dados(self):
+        self.conecta_banco()
+        print('#    INSERIR NOVO REGISTRO   #')
+        self.nome = input('Digite o Nome: ')
+        self.cpf = input('Digite o cpf: ')
+        self.email = input('Digite o Email: ')
+        self.conn.execute('INSERT INTO Clientes (nome,cpf,email) VALUES (?, ?, ?)',(self.nome, self.cpf, self.email))
+        self.conn.commit()
+        print('Sucesso!')
+        self.desconecta()
+        self.principal()
+
+
+    def mostrar_dados(self):
+        self.conecta_banco()
+        lista = self.cursor.execute('SELECT nome, cpf, email FROM Clientes')
+        for cliente in lista:
+            print(cliente)
+        self.desconecta()
+
+
+    def deleta(self):
+        self.conecta_banco()
+        print('Qual CPF a ser deletado?: ')
+        cpf_delete = input('Digite o CPF: ')
+        self.cursor.execute('DELETE FROM Clientes WHERE cpf= {} '.format(cpf_delete))
+        self.conn.commit()
+        print('Sucesso!')
+        self.principal()
+
+
+    def alterar(self):
+        self.conecta_banco()
+        print('Qual registro a ser alterado?')
+        cpf_alterar = input('Digite o CPF que irá ser alterado: ')
+        novo_nome = input('Digite o novo nome: ')
+        novo_email = input('Digite o novo email: ')
+        self.cursor.execute('UPDATE Clientes SET nome= ?, email= ? WHERE cpf = ?',(novo_nome, novo_email, cpf_alterar))
+        self.conn.commit()
+        print('Sucesso')
+        self.principal()
+
+
+Crud = Crud()
+Crud.cria_banco()
