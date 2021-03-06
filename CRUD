@@ -62,45 +62,63 @@ class Crud():
     def inserir_dados(self):
         self.conecta_banco()
         print('#    INSERIR NOVO REGISTRO   #')
-        self.nome = input('Digite o Nome: ')
-        self.cpf = input('Digite o cpf: ')
-        self.email = input('Digite o Email: ')
-        self.conn.execute('INSERT INTO Clientes (nome,cpf,email) VALUES (?, ?, ?)',(self.nome, self.cpf, self.email))
-        self.conn.commit()
-        print('Sucesso!')
-        self.desconecta()
-        self.principal()
+        try:
+            self.nome = input('Digite o Nome: ')
+            self.cpf = int(input('Digite o cpf: '))
+            self.email = input('Digite o Email: ')
+            self.conn.execute('INSERT INTO Clientes (nome,cpf,email) VALUES (?, ?, ?)',(self.nome, self.cpf, self.email))
+            self.conn.commit()
+            print('Sucesso!')
+            self.desconecta()
+            self.principal()
+        except:
+            print('por favor digite dados validos')
+            self.inserir_dados()
 
 
     def mostrar_dados(self):
-        self.conecta_banco()
-        lista = self.cursor.execute('SELECT nome, cpf, email FROM Clientes')
-        for cliente in lista:
-            print(cliente)
-        self.desconecta()
+        try:
+            self.conecta_banco()
+            lista = self.cursor.execute('SELECT nome, cpf, email FROM Clientes')
+            for cliente in lista:
+                print(cliente)
+            self.desconecta()
+        except:
+            print('Digite um nome valido')
+            self.mostrar_dados()
 
 
     def deleta(self):
-        self.conecta_banco()
-        print('Qual CPF a ser deletado?: ')
-        cpf_delete = input('Digite o CPF: ')
-        self.cursor.execute('DELETE FROM Clientes WHERE cpf= {} '.format(cpf_delete))
-        self.conn.commit()
-        print('Sucesso!')
-        self.principal()
+        try:
+            self.conecta_banco()
+            print('Qual CPF a ser deletado?: ')
+            cpf_delete = input('Digite o CPF: ')
+            self.cursor.execute('DELETE FROM Clientes WHERE cpf= {} '.format(cpf_delete))
+            self.conn.commit()
+            print('Sucesso!')
+            self.principal()
+        except:
+            print('Insira um cpf valido')
+            self.deleta()
 
 
     def alterar(self):
-        self.conecta_banco()
-        print('Qual registro a ser alterado?')
-        cpf_alterar = input('Digite o CPF que irá ser alterado: ')
-        novo_nome = input('Digite o novo nome: ')
-        novo_email = input('Digite o novo email: ')
-        self.cursor.execute('UPDATE Clientes SET nome= ?, email= ? WHERE cpf = ?',(novo_nome, novo_email, cpf_alterar))
-        self.conn.commit()
-        print('Sucesso')
-        self.principal()
+        try:
+            self.conecta_banco()
+            print('Qual registro a ser alterado?')
+            cpf_alterar = input('Digite o CPF que irá ser alterado: ')
+            novo_nome = input('Digite o novo nome: ')
+            novo_email = input('Digite o novo email: ')
+            self.cursor.execute('UPDATE Clientes SET nome= ?, email= ? WHERE cpf = ?',(novo_nome, novo_email, cpf_alterar))
+            self.conn.commit()
+            print('Sucesso')
+            self.principal()
+        except:
+            print('Não foi possivel alterar os dados')
 
+
+    def valida_cpf(self,cpf):
+        pass
 
 Crud = Crud()
 Crud.cria_banco()
